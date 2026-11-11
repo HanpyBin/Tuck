@@ -33,9 +33,10 @@
 需要 macOS 14+ 和 Xcode / Swift 5.9+。
 
 ```bash
-./scripts/build-app.sh
-open build/Tuck.app
+./scripts/install.sh   # 构建、安装到 /Applications 并启动
 ```
+
+只想构建不安装：`./scripts/build-app.sh`，产物在 `build/Tuck.app`。
 
 > 请先退出 Hidden Bar 等同类软件，两者同时运行会互相干扰。
 
