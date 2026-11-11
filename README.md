@@ -16,10 +16,16 @@
 
 ## 功能
 
+- **在设置里直接选择每个图标放在哪个区域**（常显 / 隐藏 / 始终隐藏），Tuck 会自动帮你移动，不用手动 ⌘ 拖。
+  即使图标被刘海挡住或在屏幕外也能移动。需要「辅助功能」权限。
+- 常显区图标太多、超出刘海右侧空间时给出提示
 - 展开后自动收起（鼠标在菜单栏上或有菜单打开时不会收起）
 - 全局快捷键（默认 ⌃⌥⌘B，可在设置中录制）
 - 登录时启动
-- URL scheme：`tuck://toggle`、`tuck://show`、`tuck://show-all`、`tuck://hide`、`tuck://settings`（可配合 Raycast / 快捷指令）
+- URL scheme（可配合 Raycast / 快捷指令）：
+  - `tuck://toggle`、`tuck://show`、`tuck://show-all`、`tuck://hide`、`tuck://settings`
+  - `tuck://move?id=<图标ID>&to=visible|hidden|always`
+  - `tuck://dump`：把识别到的图标列表写到 `~/Library/Caches/io.github.hanpybin.Tuck/items.txt`（图标 ID 也在里面）
 - 分隔线位置不对时拒绝收起，避免把 Tuck 自己藏掉
 
 ## 构建
@@ -32,3 +38,16 @@ open build/Tuck.app
 ```
 
 > 请先退出 Hidden Bar 等同类软件，两者同时运行会互相干扰。
+
+## 实现说明
+
+- 收起：把分隔线的长度设为 10000，左边的图标被挤出屏幕（与 Hidden Bar 相同的原理）。
+- 识别图标：macOS 26 起所有菜单栏图标窗口都归「控制中心」所有，无法从窗口列表看出属于哪个 App，
+  因此用辅助功能 API（`AXExtrasMenuBar`）读取每个 App 的菜单栏图标。
+- 移动图标：在收起状态下（此时每个图标都有窗口），向图标窗口直接投递带 ⌘ 的鼠标按下/抬起事件，
+  落点在分隔线的最左端或最右端。事件直接发给窗口，所以不需要图标在屏幕上可见。
+
+## 已知限制
+
+- 本地构建使用 ad-hoc 签名，每次重新构建后可能需要在「系统设置 › 隐私与安全性 › 辅助功能」里重新勾选 Tuck。
+- 在「系统设置 › 菜单栏」中被关闭的图标不会出现在列表中。

@@ -39,8 +39,48 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             case "show-all": menuBar.apply(.expandedAll)
             case "hide": menuBar.apply(.collapsed)
             case "settings": openSettings()
+            case "dump": dumpItems()
+            case "move": moveItem(url)
             default: break
             }
+        }
+    }
+
+    private var lastMoveResult = "-"
+
+    static var dumpURL: URL {
+        FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("io.github.hanpybin.Tuck/items.txt")
+    }
+
+    /// 把当前识别到的菜单栏图标写到缓存目录，方便排查问题
+    private func dumpItems() {
+        var lines = ["trusted=\(Accessibility.isTrusted) state=\(menuBar.state) lastMove=\(lastMoveResult)"]
+        for item in MenuBarScanner.scan(controller: menuBar) {
+            lines.append("\(item.section.title)\t\(item.id)\t\(item.displayName)\tx=\(Int(item.frame.minX)) w=\(Int(item.frame.width))")
+        }
+        let url = Self.dumpURL
+        try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try? lines.joined(separator: "\n").write(to: url, atomically: true, encoding: .utf8)
+    }
+
+    /// tuck://move?id=<图标 id>&to=visible|hidden|always
+    private func moveItem(_ url: URL) {
+        let query = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems ?? []
+        guard let id = query.first(where: { $0.name == "id" })?.value,
+              let to = query.first(where: { $0.name == "to" })?.value,
+              let item = MenuBarScanner.scan(controller: menuBar).first(where: { $0.id == id }) else {
+            lastMoveResult = "not found: \(url.absoluteString)"
+            dumpItems()
+            return
+        }
+        let section: BarSection = to == "visible" ? .visible : (to == "always" ? .alwaysHidden : .hidden)
+        ItemMover.move(item, to: section, controller: menuBar) { [weak self] result in
+            switch result {
+            case .success: self?.lastMoveResult = "ok \(id) -> \(to)"
+            case .failure(let error): self?.lastMoveResult = "failed \(id) -> \(to): \(error.localizedDescription)"
+            }
+            self?.dumpItems()
         }
     }
 

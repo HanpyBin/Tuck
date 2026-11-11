@@ -27,6 +27,8 @@ struct SettingsView: View {
 
     var body: some View {
         TabView {
+            ItemsView(controller: menuBar)
+                .tabItem { Label("菜单栏图标", systemImage: "menubar.rectangle") }
             GeneralSettingsView()
                 .tabItem { Label("通用", systemImage: "gearshape") }
             HelpView()
