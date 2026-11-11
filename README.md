@@ -1,4 +1,6 @@
-# Tuck
+<p align="center"><img src="docs/icon.png" width="128" alt="Tuck icon"></p>
+
+<h1 align="center">Tuck</h1>
 
 一个 macOS 菜单栏（状态栏）图标管理工具：只把你关心的图标留在菜单栏上，其余的收起来。专门考虑了刘海屏菜单栏空间不够的问题。
 
@@ -54,3 +56,12 @@
 
 - 本地构建使用 ad-hoc 签名，每次重新构建后可能需要在「系统设置 › 隐私与安全性 › 辅助功能」里重新勾选 Tuck。
 - 在「系统设置 › 菜单栏」中被关闭的图标不会出现在列表中。
+
+## 图标
+
+图标由 `scripts/make-icon.swift` 用代码绘制。修改后重新生成：
+
+```bash
+swift scripts/make-icon.swift /tmp/tuck-icon
+iconutil -c icns /tmp/tuck-icon/AppIcon.iconset -o Resources/AppIcon.icns
+```
