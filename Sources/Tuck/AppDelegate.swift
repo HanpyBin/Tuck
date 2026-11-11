@@ -41,6 +41,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             case "settings": openSettings()
             case "dump": dumpItems()
             case "move": moveItem(url)
+            case "place": placeItem(url)
             default: break
             }
         }
@@ -79,6 +80,28 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             switch result {
             case .success: self?.lastMoveResult = "ok \(id) -> \(to)"
             case .failure(let error): self?.lastMoveResult = "failed \(id) -> \(to): \(error.localizedDescription)"
+            }
+            self?.dumpItems()
+        }
+    }
+
+    /// tuck://place?id=<图标 id>&left-of=<图标 id>  或  &right-of=<图标 id>
+    private func placeItem(_ url: URL) {
+        let query = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems ?? []
+        func value(_ n: String) -> String? { query.first(where: { $0.name == n })?.value }
+        let items = MenuBarScanner.scan(controller: menuBar)
+        let side: ItemMover.Side = value("left-of") != nil ? .left : .right
+        guard let id = value("id"), let anchorID = value("left-of") ?? value("right-of"),
+              let item = items.first(where: { $0.id == id }),
+              let anchor = items.first(where: { $0.id == anchorID }) else {
+            lastMoveResult = "not found: \(url.absoluteString)"
+            dumpItems()
+            return
+        }
+        ItemMover.place(item, side, of: anchor, controller: menuBar) { [weak self] result in
+            switch result {
+            case .success: self?.lastMoveResult = "ok \(id) \(side) of \(anchorID)"
+            case .failure(let error): self?.lastMoveResult = "failed \(id): \(error.localizedDescription)"
             }
             self?.dumpItems()
         }

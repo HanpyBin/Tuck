@@ -18,6 +18,7 @@
 
 - **在设置里直接选择每个图标放在哪个区域**（常显 / 隐藏 / 始终隐藏），Tuck 会自动帮你移动，不用手动 ⌘ 拖。
   即使图标被刘海挡住或在屏幕外也能移动。需要「辅助功能」权限。
+- **调整图标顺序**：在设置里上下拖动、点 ←/→，或右键「移到最右 / 移到最左」。列表从上到下对应菜单栏从右到左。
 - 常显区图标太多、超出刘海右侧空间时给出提示
 - 展开后自动收起（鼠标在菜单栏上或有菜单打开时不会收起）
 - 全局快捷键（默认 ⌃⌥⌘B，可在设置中录制）
@@ -25,6 +26,7 @@
 - URL scheme（可配合 Raycast / 快捷指令）：
   - `tuck://toggle`、`tuck://show`、`tuck://show-all`、`tuck://hide`、`tuck://settings`
   - `tuck://move?id=<图标ID>&to=visible|hidden|always`
+  - `tuck://place?id=<图标ID>&left-of=<图标ID>`（或 `right-of=`）：调整顺序
   - `tuck://dump`：把识别到的图标列表写到 `~/Library/Caches/io.github.hanpybin.Tuck/items.txt`（图标 ID 也在里面）
 - 分隔线位置不对时拒绝收起，避免把 Tuck 自己藏掉
 

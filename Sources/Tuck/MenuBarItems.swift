@@ -136,7 +136,8 @@ enum MenuBarScanner {
 enum MenuBarWindows {
     typealias Window = (id: CGWindowID, frame: CGRect)
 
-    static func all() -> [Window] {
+    /// includeWide：是否包含收起状态下超宽的分隔线窗口
+    static func all(includeWide: Bool = false) -> [Window] {
         guard let list = CGWindowListCopyWindowInfo([.optionAll], kCGNullWindowID) as? [[String: Any]] else { return [] }
         let statusLevel = Int(CGWindowLevelForKey(.statusWindow))
         return list.compactMap { info in
@@ -145,7 +146,7 @@ enum MenuBarWindows {
                   let b = CGRect(dictionaryRepresentation: dict),
                   let number = info[kCGWindowNumber as String] as? CGWindowID,
                   // 排除弹出窗口和收起状态下超宽的分隔线
-                  b.minY < 5, b.height < 60, b.width < 1000 else { return nil }
+                  b.minY < 5, b.height < 60, includeWide || b.width < 1000 else { return nil }
             return (number, b)
         }
     }
