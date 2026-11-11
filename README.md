@@ -32,6 +32,12 @@
   - `tuck://dump`：把识别到的图标列表写到 `~/Library/Caches/io.github.hanpybin.Tuck/items.txt`（图标 ID 也在里面）
 - 分隔线位置不对时拒绝收起，避免把 Tuck 自己藏掉
 
+## 下载安装
+
+到 [Releases](../../releases) 下载最新的 `Tuck-x.y.z.zip`，解压后把 Tuck.app 拖进「应用程序」。
+Tuck 没有经过 Apple 公证，第一次打开时到「系统设置 › 隐私与安全性」底部点「仍要打开」，
+或在终端运行 `xattr -dr com.apple.quarantine /Applications/Tuck.app`。
+
 ## 构建
 
 需要 macOS 14+ 和 Xcode / Swift 5.9+。
@@ -65,3 +71,8 @@
 swift scripts/make-icon.swift /tmp/tuck-icon
 iconutil -c icns /tmp/tuck-icon/AppIcon.iconset -o Resources/AppIcon.icns
 ```
+
+## 发布新版本
+
+1. 修改 `Resources/Info.plist` 里的 `CFBundleShortVersionString`
+2. `./scripts/release.sh --publish`（构建通用版、打包 zip、创建 GitHub Release）
