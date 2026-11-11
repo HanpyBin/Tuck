@@ -34,7 +34,7 @@
 
 ## 下载安装
 
-到 [Releases](../../releases) 下载最新的 `Tuck-x.y.z.zip`，解压后把 Tuck.app 拖进「应用程序」。
+到 [Releases](../../releases) 下载最新的 `Tuck-x.y.z.dmg`，双击打开，把 Tuck 拖到「Applications」文件夹。
 Tuck 没有经过 Apple 公证，第一次打开时到「系统设置 › 隐私与安全性」底部点「仍要打开」，
 或在终端运行 `xattr -dr com.apple.quarantine /Applications/Tuck.app`。
 
@@ -75,4 +75,4 @@ iconutil -c icns /tmp/tuck-icon/AppIcon.iconset -o Resources/AppIcon.icns
 ## 发布新版本
 
 1. 修改 `Resources/Info.plist` 里的 `CFBundleShortVersionString`
-2. `./scripts/release.sh --publish`（构建通用版、打包 zip、创建 GitHub Release）
+2. `./scripts/release.sh --publish`（构建通用版、打包 DMG、创建 GitHub Release）
