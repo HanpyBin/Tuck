@@ -29,7 +29,7 @@ struct SettingsView: View {
         TabView {
             ItemsView(controller: menuBar)
                 .tabItem { Label("菜单栏图标", systemImage: "menubar.rectangle") }
-            GeneralSettingsView()
+            GeneralSettingsView(menuBar: menuBar)
                 .tabItem { Label("通用", systemImage: "gearshape") }
             HelpView()
                 .tabItem { Label("使用说明", systemImage: "questionmark.circle") }
@@ -40,6 +40,8 @@ struct SettingsView: View {
 }
 
 struct GeneralSettingsView: View {
+    var menuBar: MenuBarController?
+    @State private var copied = false
     @ObservedObject private var settings = Settings.shared
     @State private var launchAtLogin = SMAppService.mainApp.status == .enabled
     @State private var loginError: String?
@@ -70,6 +72,18 @@ struct GeneralSettingsView: View {
                         Text("快捷键")
                         Spacer()
                         HotKeyRecorder(combo: $settings.hotKey)
+                    }
+                }
+            }
+            Section("问题反馈") {
+                HStack {
+                    Text("移动图标失败时，把诊断信息发给开发者")
+                    Spacer()
+                    Button(copied ? "已复制" : "复制诊断信息") {
+                        guard let menuBar else { return }
+                        NSPasteboard.general.clearContents()
+                        NSPasteboard.general.setString(Diagnostics.report(controller: menuBar), forType: .string)
+                        copied = true
                     }
                 }
             }

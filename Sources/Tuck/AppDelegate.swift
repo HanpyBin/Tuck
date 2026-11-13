@@ -60,6 +60,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         for item in MenuBarScanner.scan(controller: menuBar) {
             lines.append("\(item.section.title)\t\(item.id)\t\(item.displayName)\tx=\(Int(item.frame.minX)) w=\(Int(item.frame.width))")
         }
+        lines.append("==== diagnostics")
+        lines.append(Diagnostics.report(controller: menuBar))
         let url = Self.dumpURL
         try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
         try? lines.joined(separator: "\n").write(to: url, atomically: true, encoding: .utf8)
