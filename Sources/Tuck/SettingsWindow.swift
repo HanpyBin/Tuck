@@ -5,7 +5,7 @@ import ServiceManagement
 final class SettingsWindowController: NSWindowController {
     convenience init(menuBar: MenuBarController) {
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 1100, height: 520),
+            contentRect: NSRect(x: 0, y: 0, width: 1100, height: 560),
             styleMask: [.titled, .closable, .miniaturizable, .resizable],
             backing: .buffered, defer: false)
         window.title = "Tuck 设置"
@@ -31,8 +31,6 @@ struct SettingsView: View {
                 .tabItem { Label("菜单栏图标", systemImage: "menubar.rectangle") }
             GeneralSettingsView(menuBar: menuBar)
                 .tabItem { Label("通用", systemImage: "gearshape") }
-            HelpView()
-                .tabItem { Label("使用说明", systemImage: "questionmark.circle") }
         }
         .padding()
         .frame(minWidth: 820, minHeight: 460)
@@ -137,29 +135,6 @@ struct HotKeyRecorder: View {
             recording = false
             let s = Settings.shared
             HotKeyCenter.shared.register(s.hotKeyEnabled ? s.hotKey : nil)
-        }
-    }
-}
-
-struct HelpView: View {
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Tuck 在菜单栏放了三个东西（从右往左）：").bold()
-                Text("‹  Tuck 图标：单击展开/收起；⌥ 单击显示全部；右键打开菜单")
-                Text("│  隐藏分隔线：它左边的图标平时被收起")
-                Text("┊  始终隐藏分隔线：它左边的图标只有 ⌥ 单击时才显示")
-                Divider()
-                Text("调整图标所在区域").bold()
-                Text("按住 ⌘ 拖动菜单栏图标，把它放到对应分隔线的左边或右边即可。")
-                Text("最终布局：[始终隐藏] ┊ [隐藏] │ [常显] ‹")
-                    .font(.system(.body, design: .monospaced))
-                Divider()
-                Text("刘海屏提示").bold()
-                Text("刘海会挡住菜单栏中间的一段，展开后图标太多时，左边的图标仍可能被刘海挡住或被系统省略。把不常用的图标放进「始终隐藏」区域可以缓解。")
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding()
         }
     }
 }

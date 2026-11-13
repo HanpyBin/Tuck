@@ -145,17 +145,33 @@ struct ItemsView: View {
                 .onAppear { proxy.scrollTo("replica", anchor: .trailing) }
             }
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text("上面对应你的菜单栏，从左到右顺序一致。把图标拖到哪里，菜单栏上的图标就会被移到哪里：")
-                Text("• **常显**：一直显示在菜单栏上")
-                Text("• **隐藏**：平时收起，单击 ‹ 展开时显示")
-                if settings.alwaysHiddenEnabled {
-                    Text("• **始终隐藏**：只有 ⌥ 单击 ‹ 时才显示")
+            Divider().padding(.vertical, 4)
+            HStack(alignment: .top, spacing: 28) {
+                DragDemoView()
+                    .padding(12)
+                    .background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 10))
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("怎么用").font(.headline)
+                    tip("hand.draw", "把图标拖到「常显」就一直显示，拖到「隐藏」平时收起。右键图标也能直接选区域。")
+                    tip("cursorarrow.click", "单击菜单栏上的 ‹ 展开或收起隐藏的图标，快捷键 \(settings.hotKey.displayString)。")
+                    if settings.alwaysHiddenEnabled {
+                        tip("option", "「始终隐藏」的图标只有 ⌥ 单击 ‹ 时才出现。")
+                    }
+                    tip("command", "也可以在菜单栏上按住 ⌘ 直接拖动图标。")
+                    tip("rectangle.topthird.inset.filled", "常显图标太多会被刘海挡住，超出时这里会提醒。")
                 }
-                Text("也可以右键图标直接选择区域。移动时菜单栏会短暂展开，有时光标会闪一下，这是正常的。")
+                .font(.callout)
+                .frame(maxWidth: 360, alignment: .leading)
             }
-            .font(.callout).foregroundStyle(.secondary)
             Spacer(minLength: 0)
+        }
+    }
+
+    private func tip(_ symbol: String, _ text: String) -> some View {
+        Label {
+            Text(text).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+        } icon: {
+            Image(systemName: symbol).foregroundStyle(.tint).frame(width: 18)
         }
     }
 
