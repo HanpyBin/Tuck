@@ -5,7 +5,7 @@ import ServiceManagement
 final class SettingsWindowController: NSWindowController {
     convenience init(menuBar: MenuBarController) {
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 560, height: 600),
+            contentRect: NSRect(x: 0, y: 0, width: 1100, height: 520),
             styleMask: [.titled, .closable, .miniaturizable, .resizable],
             backing: .buffered, defer: false)
         window.title = "Tuck 设置"
@@ -35,7 +35,7 @@ struct SettingsView: View {
                 .tabItem { Label("使用说明", systemImage: "questionmark.circle") }
         }
         .padding()
-        .frame(minWidth: 520, minHeight: 520)
+        .frame(minWidth: 820, minHeight: 460)
     }
 }
 

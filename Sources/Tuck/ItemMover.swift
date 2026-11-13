@@ -234,3 +234,26 @@ enum ItemMover {
         if let savedCursor { CGWarpMouseCursorPosition(savedCursor) }
     }
 }
+
+extension ItemMover {
+    /// 把图标放到某个区域里从左往右数第 index 个位置（index 按包含被拖图标在内的当前顺序计算，
+    /// 和设置页里的复刻菜单栏一致）。会换算成「放到某个图标左/右边」或「移到某区域」。
+    static func drop(_ item: MenuBarItem, into section: BarSection, at index: Int, items: [MenuBarItem],
+                     controller: MenuBarController, completion: @escaping (Result<Void, Error>) -> Void) {
+        let zone = items.filter { $0.section == section && $0.movable }.sorted { $0.frame.minX < $1.frame.minX }
+        var target = max(0, min(index, zone.count))
+        if let old = zone.firstIndex(where: { $0.id == item.id }) {
+            // 同一区域内：原位置左右两侧都等于没动
+            if target == old || target == old + 1 { return completion(.success(())) }
+            if target > old { target -= 1 }
+        }
+        let others = zone.filter { $0.id != item.id }
+        if others.isEmpty {
+            move(item, to: section, controller: controller, completion: completion)
+        } else if target < others.count {
+            place(item, .left, of: others[target], controller: controller, completion: completion)
+        } else {
+            place(item, .right, of: others[others.count - 1], controller: controller, completion: completion)
+        }
+    }
+}

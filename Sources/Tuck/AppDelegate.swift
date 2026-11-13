@@ -42,6 +42,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             case "dump": dumpItems()
             case "move": moveItem(url)
             case "place": placeItem(url)
+            case "drop": dropItem(url)
+            case "snapshot": snapshotSettings()
             default: break
             }
         }
@@ -107,6 +109,35 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
             self?.dumpItems()
         }
+    }
+
+    /// tuck://drop?id=<图标 id>&zone=visible|hidden|always&index=<从左往右的位置>
+    private func dropItem(_ url: URL) {
+        let query = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems ?? []
+        func value(_ n: String) -> String? { query.first(where: { $0.name == n })?.value }
+        let items = MenuBarScanner.scan(controller: menuBar)
+        guard let id = value("id"), let item = items.first(where: { $0.id == id }),
+              let index = value("index").flatMap(Int.init) else {
+            lastMoveResult = "not found: \(url.absoluteString)"; dumpItems(); return
+        }
+        let zone = value("zone")
+        let section: BarSection = zone == "visible" ? .visible : (zone == "always" ? .alwaysHidden : .hidden)
+        ItemMover.drop(item, into: section, at: index, items: items, controller: menuBar) { [weak self] result in
+            switch result {
+            case .success: self?.lastMoveResult = "ok drop \(id) \(section) #\(index)"
+            case .failure(let error): self?.lastMoveResult = "failed \(id): \(error.localizedDescription)"
+            }
+            self?.dumpItems()
+        }
+    }
+
+    /// 调试用：把设置窗口当前内容保存成 PNG（不需要屏幕录制权限）
+    private func snapshotSettings() {
+        guard let view = settingsWindow?.window?.contentView?.superview,
+              let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { return }
+        view.cacheDisplay(in: view.bounds, to: rep)
+        let url = Self.dumpURL.deletingLastPathComponent().appendingPathComponent("settings.png")
+        try? rep.representation(using: .png, properties: [:])?.write(to: url)
     }
 
     func openSettings() {
